@@ -30,15 +30,10 @@
 
     <h2>Header</h2>
 <input type="hidden" id="text" value="{{para}}">
-
+<form>
 <pre><textarea ALIGN=LEFT id="Document" contenteditable="true" onkeyup="getLineNumber(this);" onmouseup="this.onkeyup();"></textarea></pre>
-<pre><input id="console" type="hidden"></pre>
-
-<p><label>operation: <input name="foo" id="input" value="" type="hidden"/></label> 
-    <label>Line number: <input id="lineNo" /> </label>
-    <label>Position: <input id="posNo" /> </label>
-</p>
-
+Press CTRL+S to save
+</form>
 </div>
 </center>
 
@@ -56,8 +51,8 @@
     var Name = {{ name_json }};
 
     console.d = function(dict){
-        document.getElementById("input").value=dict['op'];
-        $('#input').text(dict['op']);
+        //document.getElementById("input").value=dict['op'];
+        //$('#input').text(dict['op']);
         chatSocket.send(JSON.stringify({
             'op': dict['op'],
             'name': dict['name'],
@@ -129,8 +124,8 @@
     };
 
     function getLineNumber(textarea) {
-        document.getElementById('lineNo').value = textarea.value.substr(0, textarea.selectionStart).split("\n").length;
-        document.getElementById('posNo').value = textarea.selectionStart;
+        //document.getElementById('lineNo').value = textarea.value.substr(0, textarea.selectionStart).split("\n").length;
+        //document.getElementById('posNo').value = textarea.selectionStart;
         //document.getElementById('input').value ="";
     }
 
@@ -179,7 +174,7 @@
                 doc=operate(data['op'],data['pos'],doc,data['word']);
             }
             document.getElementById('Document').value=doc;
-            document.querySelector('#console').value = (message + '\n');
+            //document.querySelector('#console').value = (message + '\n');
         }
     };
 
