@@ -8,13 +8,33 @@
       border: 1px solid #cccccc;
       padding: 5px;
     }
+    input[type='submit'] {
+        width: 10%;
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    input[type='button'] {
+        width: 10%;
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
     input[type=text], select {
         padding: 8px 20px;
         margin: 8px 0;
         border: 1px solid #ccc;
         border-radius: 4px;
       }
-    div {
+    body {
         border-radius: 5px;
         background-color: #f2f2f2;
         padding: 10px;
@@ -23,16 +43,34 @@
         color: rgb(49, 47, 47);
         margin: 0;
       }
+      span[type="saved"]{
+        position: absolute;
+        left: 1000px;
+        width: 200px;
+        height: 20px;
+    }
 </style>
 
 <center>
 <div class="groove" >
 
-    <h2>Header</h2>
+    <p style="font-size:120%;"><b>Collaborative Editor</b></p>
+    <p style="font-size:90%;"  class="clearfix">Document-Id: {{room_name_json}} 
+        <span type="saved" id="showsaved">Document is Saved</span>
+    </p>
 <input type="hidden" id="text" value="{{para}}">
-<form>
-<pre><textarea ALIGN=LEFT id="Document" contenteditable="true" onkeyup="getLineNumber(this);" onmouseup="this.onkeyup();"></textarea></pre>
-Press CTRL+S to save
+<form action=http://127.0.0.1:8000/save method="POST">
+    {% csrf_token %}
+
+    <input type="hidden" name="docid" value={{room_name_json}}>
+    <input type="hidden" name="author" value={{name_json}}>
+    
+    <pre><textarea ALIGN=LEFT id="Document" name="Document" contenteditable="true" onkeyup="getLineNumber(this);" onmouseup="this.onkeyup();"></textarea></pre>
+    Press CTRL+S to
+    <input type="submit" Value="Save" id="submit" onclick=func()></button>
+    
+    <input type="button" Value="Compare Version" id="Compare" ></button>
+    <input type="button" Value="View History" id="History" ></button>
 </form>
 </div>
 </center>
@@ -40,16 +78,37 @@ Press CTRL+S to save
 <script>    
     var val=document.getElementById("text").value;
     document.getElementById("Document").innerHTML=val;
+    document.getElementById("showsaved").style.color='#2DE372';
+    document.getElementById("Document").selectionStart=val.length; 
+   
 </script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> 
 
 <script>
     var cache=[];
-
+    //setInterval(function(){document.getElementById("submit").click();}, 10000);
     var roomName = {{ room_name_json }};
     var Name = {{ name_json }};
 
+    document.querySelector('#Compare').onclick = function(e) {
+        window.location.pathname = '/compare/'+Name+'/'+ roomName + '/';
+    };
+    
+    document.querySelector('#History').onclick = function(e) {
+        window.location.pathname = '/history/'+Name+'/'+ roomName + '/';
+    };
+    ///Fault in reloading others
+   function func(){
+    chatSocket.send(JSON.stringify({
+        'op': 'save',
+        'name': Name,
+        'word': '',
+        'pos': '',
+        'time': ''
+    }));
+   }
+   
     console.d = function(dict){
         //document.getElementById("input").value=dict['op'];
         //$('#input').text(dict['op']);
@@ -65,18 +124,95 @@ Press CTRL+S to save
     
     document.querySelector('#Document').focus();
     document.querySelector('#Document').onkeydown = function(e) {
+
+        if(e.ctrlKey && e.keyCode==83){
+            e.preventDefault();
+            document.getElementById("submit").click();
+            return;
+        }
+        if(e.keyCode==9){
+            e.preventDefault();
+        }
+        if(e.ctrlKey && e.keyCode==82){
+            return;
+        }
+        
         textarea= document.getElementById('Document');
         //console.log(e.type, e);
         var text = "";
-        var code = e.keyCode;
+        var code = event.which || event.keyCode;
+        var sp={
+            '191':'/',
+            '219':'[',
+            '220':'\\',
+            '221':']',
+            '222':'\'',
+            '190':'.',
+            '189':'-',
+            '188':',',
+            '187':'=',
+            '186':';',
+            '107':'+',
+            '110':'.',
+            '111':'/',
+            '109':'-',
+            '106':'*',
+            '105':'9',
+            '104':'8',
+            '103':'7',
+            '102':'6',
+            '101':'5',
+            '100':'4',
+            '99':'3',
+            '98':'2',
+            '97':'1',
+            '96':'0',
+            '9':'    ',
+   ///Fault in pressing ctrl,c,v,and special characters
+        };
+        var shft={
+            '49':'!',
+            '50':'@',
+            '51':'#',
+            '52':'$',
+            '53':'%',
+            '54':'^',
+            '55':'&',
+            '56':'*',
+            '57':'(',
+            '48':')',
+            '219':'{',
+            '220':'|',
+            '221':'}',
+            '222':'\"',
+            '190':'>',
+            '189':'_',
+            '188':'<',
+            '187':'+',
+            '186':':',
+            '107':'+',
+            '110':'.',
+            '191':'?',
+            '109':'-',
+            '106':'*',
+        };
         var arr=[38,40,37,39,27,17,16,18,9,20,91,93,36,35,45,33,34,144];
         //del 46
         //back 8
         if(arr.indexOf(code)==-1){ 
             var charac=String.fromCharCode(code);
             charac = charac.toLowerCase(charac);
+            if(code in sp){
+                charac=sp[code];
+            }
             if(e.shiftKey){
+                
+                console.log(code+' '+charac);
                 charac=charac.toUpperCase(charac);
+                if(code in shft){
+                    charac=shft[code];
+                    console.log(code+' '+charac);
+                }
             }
           
             if(code==13){
@@ -120,6 +256,9 @@ Press CTRL+S to save
             cache=cache.splice(cache.length-250-1,250);
         }
 
+        document.getElementById("showsaved").style.color='#C9CBC7';
+        document.getElementById("showsaved").innerHTML='Document is Not Saved';
+        
         console.d(dict);
     };
 
@@ -132,11 +271,25 @@ Press CTRL+S to save
 
     var chatSocket = new WebSocket(
         'ws://' + window.location.host +
-        '/ws/chat/' + Name+'/'+roomName + '/');
+        '/ws/doc/' + Name+'/'+roomName + '/');
+    
+    
 
     chatSocket.onmessage = function(e) {
         var data = JSON.parse(e.data);
-        if(data['name']!=Name){
+        
+        document.getElementById("showsaved").style.color='#C9CBC7';
+        document.getElementById("showsaved").innerHTML='Document is Not Saved';
+
+        if(data['name']!=Name){ 
+            if(data['op']=='save'){
+                alert("Document is saved by another user.")
+                location.reload();
+                document.getElementById("showsaved").innerHTML='Document is Saved';
+                document.getElementById("showsaved").style.color='#2DE372';
+                return;
+            }
+
             console.log("recieve");
             console.log(data);
             var message = data['op']+' '+data['name']+' '+data['pos']+' '+data['time']+' '+data['word'];
@@ -205,4 +358,5 @@ Press CTRL+S to save
         }
         return doc;
     }
+    
 </script>
