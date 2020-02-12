@@ -1,0 +1,89 @@
+<style>
+    #doc {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+        }
+        
+        #doc td, #doc th {
+        border: 1px solid #ddd;
+        padding: 8px;
+        }
+        
+        #doc tr:nth-child(even){background-color: #f2f2f2;}
+        
+        #doc tr:hover {background-color: #ddd;}
+        
+        #doc th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #4CAF50;
+        color: white;
+        }
+  body{
+      border-radius: 5px;
+      background-color: #f2f2f2;
+      padding: 10px;
+      font-family: Arial;
+      color: rgb(49, 47, 47);
+      margin: 0;
+    }
+    div{
+        padding: 1px;
+        margin: 0;
+      }
+    span[type="changed"] {
+        background-color: #F7A28C;
+    }
+    span[type="same"] {
+        background-color: #B5F78C;
+    }
+    span[type="remove"] {
+        background-color: #72F177;
+    }
+    span[type="add"] {
+        background-color: #72F177;
+    }
+</style>
+<body>
+    <div>
+        <center><h1>Text Comapartor</h1></center>
+    <pre>
+
+    <table id="doc">
+        <tr>
+            <th>Commit id: {{n1}}</th>
+            <th>Commit Id: {{n2}}</th>
+        </tr>
+        <tr>
+            <td width="680">    
+                <p id='1' style="font-size:160%;"></p>
+            </td>
+            <td width="680">
+                <p id='2' style="font-size:160%;"></p>
+            </td>
+        </tr>
+    </table>
+    </pre>
+    </div>
+    <hr>
+    <div style="background-color: #ffffff;">
+        Legend:<br>
+        <span type="changed">This Line is Changed.</span><br>
+        <span type="add">This Line is Added/Removed.</span><br>
+        <span type="same">This Line is Same.</span><br>
+    <font color="green">Mathcing Character</font> and <font color="red">Non-Mathcing Character</font> are represented as different color
+    </div>
+</body>
+
+<textarea id="i1" style="display:none;">{{a}}</textarea>
+<textarea  id="i2" style="display:none;">{{b}}</textarea>
+<script>
+    var a=document.getElementById('i1').value;
+    var b=document.getElementById('i2').value;
+    console.log(a);
+    console.log(b);
+    document.getElementById('1').innerHTML=a;
+    document.getElementById('2').innerHTML=b;
+</script>
