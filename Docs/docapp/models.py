@@ -9,4 +9,3 @@ class Commits(models.Model):
     sha = models.CharField(max_length=50 , null=False)
     isdiff = models.IntegerField(default=0, null=False)
     branch = models.CharField(max_length=50 , null=False, default='master')
-    pulltime= models.DateTimeField()

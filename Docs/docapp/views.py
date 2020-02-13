@@ -16,12 +16,12 @@ def main(request, room_name,c_name,branch_name):
     
     
     qq=Commits.objects.filter(Docid=room_name, branch='master').all()
-    if qq.count()==0:
+    if branch_name!='master' and qq.count()==0:
         return HttpResponseRedirect("/")
     
     if branch_name!='master' and qq.count()>0 and q.count()==0:
         qq=qq[len(qq)-1]
-        qq=Commits(Docid=qq.Docid,author=c_name,Document=qq.Document,sha=qq.sha,branch=branch_name, pulltime=qq.timestamp)
+        qq=Commits(Docid=qq.Docid,author=c_name,Document=qq.Document,sha=qq.sha,branch=branch_name)
         qq.save()
     
     
@@ -49,10 +49,44 @@ def history(request, room_name,c_name):
             'sha': data.sha,
             'isdiff': data.isdiff,
             'branch': data.branch,
-            'pulltime': data.pulltime,
         })
     return render(request, 'docapp/history.html', {'arr':Document})
     
+
+# def pull(request,room_name,c_name,branch_name):
+#     q=Commits.objects.filter(Docid=room_name).all()
+#     Document=[]
+#     q=q[::-1]
+#     for data in q:
+#         Document.append({
+#             'Docid': data.Docid,
+#             'author': data.author,
+#             'timestamp': data.timestamp,
+#             'Document': data.Document,
+#             'id': data.id,
+#             'sha': data.sha,
+#             'isdiff': data.isdiff,
+#             'branch': data.branch,
+#         })
+#     return render(request, 'docapp/history.html', {'arr':Document})
+# def push(request,room_name,c_name,branch_name):
+    
+#     q=Commits.objects.filter(Docid=room_name, branch=branch_name).all()
+#     ##################CHECKING OF CONFLICTS#################
+#     lastpulltime=q.pulltime
+#     lasttmas=Commits.objects.filter(Docid=room_name, branch='master').all()
+#     lastmas=lastmas[len(lastmas)-1]
+#     if lastpulltime < lastmas.timestamp:
+#         a=Document
+#         b=lastmas.Document
+#         dic=lcs(a,b)
+#         a=textdiff(a,dic[0],dic[2])
+#         b=textdiff(b,dic[1],dic[3])
+#         return render(request,'docapp/TextDifferentiator.html',{
+#             'a':a,
+#             'b':b,
+#         })
+
 def saveit(request):
     if request.method=='POST':
         Docid=request.POST['docid']
@@ -61,28 +95,12 @@ def saveit(request):
         branch=request.POST['branch']
         sha = hashlib.sha1(Document.encode())
         sha = sha.hexdigest()
+        
         q=Commits.objects.filter(Docid=Docid, branch=branch).all()
         if q.count()>0:
             q=q[len(q)-1]
-            
-            ##################CHECKING OF CONFLICTS
-            lastpulltime=q.pulltime
-            lasttmas=Commits.objects.filter(Docid=Docid, branch='master').all()
-            lastmas=lastmas[len(lastmas)-1]
-            if lastpulltime < lastmas.timestamp:
-                a=Document
-                b=lastmas.Document
-                dic=lcs(a,b)
-                a=textdiff(a,dic[0],dic[2])
-                b=textdiff(b,dic[1],dic[3])
-                return render(request,'docapp/TextDifferentiator.html',{
-                    'a':a,
-                    'b':b,
-                })
-            #####################
-            
             if q.sha!=sha:
-                q=Commits(Docid=Docid,author=author,Document=Document,sha=sha,branch=branch,pulltime=lastpulltime)
+                q=Commits(Docid=Docid,author=author,Document=Document,sha=sha,branch=branch)
                 q.save()
         else:
             q=Commits(Docid=Docid,author=author,Document=Document,sha=sha,branch=branch)
@@ -107,7 +125,6 @@ def compare(request, room_name,c_name):
                 'sha': data.sha,
                 'isdiff': data.isdiff,
                 'branch': data.branch,
-                'pulltime': data.pulltime,
             })
         return render(request, 'docapp/Compare.html', {
             'room_name_json': mark_safe(json.dumps(room_name)),
