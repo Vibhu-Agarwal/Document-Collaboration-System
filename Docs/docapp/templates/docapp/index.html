@@ -28,7 +28,6 @@
         border-radius: 5px;
         background-color: #f2f2f2;
         padding: 10px;
-        text-align: center;
         font-family: Arial;
         color: rgb(49, 47, 47);
         margin: 0;
@@ -47,7 +46,9 @@
     <input id="name-input" type="text" size="100"/><br/>
     Enter Document Id:
     <input id="room-name-input" type="text" size="100"/><br/>
+    Enter branch:<input id="branch-input" type="text" size="100" value="master" /><br/>
     <input id="room-name-submit" type="button" value="Go to Workspace"/>
+    <b><i>Default is master if you input any other it will be created, dont worry you can pull later</i><br></b>
 </div>
     <script>
         document.querySelector('#name-input').focus();
@@ -60,8 +61,9 @@
         document.querySelector('#room-name-submit').onclick = function(e) {
             var roomName = document.querySelector('#room-name-input').value;
             var Name = document.querySelector('#name-input').value;
+            var Branch = document.querySelector('#branch-input').value;
             if(roomName=="" || Name=="")return;
-            window.location.pathname = '/doc/'+Name+'/'+ roomName + '/';
+            window.location.pathname = '/doc/'+Name+'/'+ roomName + '/' + Branch + '/';
         };
     </script>
 

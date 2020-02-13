@@ -4,5 +4,5 @@ from django.urls import re_path
 from .consumers import ChatConsumer
 
 websocket_urlpatterns = [
-    re_path(r'^ws/doc/(?P<c_name>[^/]+)/(?P<room_name>[^/]+)/$', ChatConsumer),
+    re_path(r'^ws/doc/(?P<c_name>[^/]+)/(?P<room_name>[^/]+)/(?P<branch_name>[^/]+)/$', ChatConsumer),
 ]

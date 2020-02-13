@@ -30,8 +30,11 @@
             <th>Committed at</th>
             <th>Last saved by</th>
             <th>Commit Id</th>
-            <th>Hash</th>
             <th>Document</th>
+            <th>Branch</th>
+            <th>Lastpulled</th>
+            <th>Is Difference</th>
+            <th>Hash</th>
         </tr>
         
         {% for val in arr %}
@@ -40,8 +43,11 @@
             <td>{{val.timestamp}}</td>
             <td>{{val.author}}</td>
             <td>{{val.id}}</td>
-            <td>{{val.sha}}</td>
             <td><pre>{{val.Document}}</pre></td>
+            <td>{{val.branch}}</td>
+            <td>{{val.pulltime}}</td>
+            <td>{{val.isdiff}}</td>
+            <td>{{val.sha}}</td>
         </tr>
         {% endfor %}
 

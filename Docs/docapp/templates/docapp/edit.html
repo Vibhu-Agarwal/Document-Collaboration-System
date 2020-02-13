@@ -64,13 +64,16 @@
 
     <input type="hidden" name="docid" value={{room_name_json}}>
     <input type="hidden" name="author" value={{name_json}}>
+    <input type="hidden" name="branch" value={{branch_json}}>
     
     <pre><textarea ALIGN=LEFT id="Document" name="Document" contenteditable="true" onkeyup="getLineNumber(this);" onmouseup="this.onkeyup();"></textarea></pre>
     Press CTRL+S to
-    <input type="submit" Value="Save" id="submit" onclick=func()></button>
+    <input type="submit" Value="Save" id="submit"></button>
     
     <input type="button" Value="Compare Version" id="Compare" ></button>
     <input type="button" Value="View History" id="History" ></button>
+    <input type="button" Value="Pull from master" id="Pull" ></button>
+    <input type="button" Value="Push to master" id="Push" ></button>
 </form>
 </div>
 </center>
@@ -90,6 +93,8 @@
     //setInterval(function(){document.getElementById("submit").click();}, 10000);
     var roomName = {{ room_name_json }};
     var Name = {{ name_json }};
+    var Branch = {{ branch_json }};
+
 
     document.querySelector('#Compare').onclick = function(e) {
         window.location.pathname = '/compare/'+Name+'/'+ roomName + '/';
@@ -99,7 +104,8 @@
         window.location.pathname = '/history/'+Name+'/'+ roomName + '/';
     };
     ///Fault in reloading others
-   function func(){
+  /*
+    function func(){
     chatSocket.send(JSON.stringify({
         'op': 'save',
         'name': Name,
@@ -108,6 +114,7 @@
         'time': ''
     }));
    }
+   */
    
     console.d = function(dict){
         //document.getElementById("input").value=dict['op'];
@@ -116,8 +123,8 @@
             'op': dict['op'],
             'name': dict['name'],
             'word': dict['word'],
-            'pos':dict['pos'],
-            'time':dict['time']
+            'pos': dict['pos'],
+            'time': dict['time']
         }));
     }
 
@@ -271,8 +278,7 @@
 
     var chatSocket = new WebSocket(
         'ws://' + window.location.host +
-        '/ws/doc/' + Name+'/'+roomName + '/');
-    
+        '/ws/doc/' + Name+'/'+roomName + '/'+ Branch+'/');
     
 
     chatSocket.onmessage = function(e) {
