@@ -1,6 +1,6 @@
 heroku login
 heroku git:clone -a <heroku_app_name>
 cd <heroku_app_name>
-heroku ps:scale web=1:free worker=1:free
 heroku addons:create heroku-redis
+heroku ps:scale web=1:free worker=1:free
 
